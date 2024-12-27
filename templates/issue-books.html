@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Issue Books{% endblock %}
+
+{% block content %}
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Issue a Book</h1>
+        
+        <!-- Alerts for Success or Error Messages -->
+        {% if message %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endif %}
+       
+        
+        <!-- Form to Issue a Book -->
+        <form action=" /issues" method="post">
+           
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="book_id" class="form-label">Book ID</label>
+                    <input type="text" id="book_id" name="book_id" class="form-control" placeholder="Enter Book ID" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="stud_id" class="form-label">Student ID</label>
+                    <input type="text" id="stud_id" name="stud_id" class="form-control" placeholder="Enter Student ID" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="borrow_date" class="form-label">Borrow date</label>
+                    <input type="date" id="borrow_date" name="borrow_date" class="form-control" placeholder="Borrow date" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="returned_date" class="form-label">Returned date</label>
+                    <input type="date" id="returned_date" name="returned_date" class="form-control" placeholder="Borrow date" required>
+                </div>
+                <div>
+                 <label for="status" class="form-label">Status</label> 
+           <select id="status" name="status" class="form-select" required>
+                    <option value="" disabled selected>Not Returned </option>
+                    <option value="Returned">Returned</option>
+                    <option value="Not Returned">Not Returned</option>
+                </select>
+            </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Issue Book</button>
+            <button type="submit" class="btn btn-primary" action=" /issues/book_id/" method="put">Return Book</button>
+        </form>
+        
+        
+        <!-- Display Validation Errors -->
+       
+    </div>
+    <h1 class="text-center mb-4">Library Lending History</h1>
+    <form action="/issues/book_id/" method="GET">
+        <label for="search">Search Book:</label>
+        <input type="text" id="book_id" name="book_id" placeholder="Enter id" required>
+        <button type="submit">Search</button>
+    </form>
+    <form action="/issues" method="GET"> 
+        <!-- Lending History Table -->
+        <div class="table-wrapper">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>StudentID</th>
+                        <th>Book Title</th>
+                        <th>Borrow Date</th>
+                        <th>Due Date</th>
+                        <th>Returned Date</th>
+                        <th>Status</th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if issued_books %}
+                        {% for record in issued_books %}
+                            <tr>
+                                <td>{{ loop.index }}</td> <!-- Use 'loop.index' for 1-based counter -->
+                                <td>{{ record.stud_id }}</td>
+                                <td>{{ record.book_id }}</td>
+                                <td>{{ record.borrow_date }}</td>
+                                <td>{{ record.returned_date }}</td>
+                                <td>{{ record.status }}</td>
+                                <td>
+                                    <!-- Use url_for to generate a proper URL for your update route -->
+                                    <a href="{{ url_for('issuebookresource', id=record.id) }}">Update</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" style="text-align: center;">No issued books available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+                
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ pagination }}
+        </div>
+    </form>
+    </div>
+
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}
